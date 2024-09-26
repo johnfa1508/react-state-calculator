@@ -1,56 +1,87 @@
+/* eslint-disable react/prop-types */
+import { useState } from "react"
 import "./App.css"
 
+function RenderNumbers({ handleChange }) {
+  let content = [];
+
+  for (let i = 1; i <= 11; i++) {
+    if (i === 10) {
+      content.push(<button key={i} onClick={() => handleChange(0)}>0</button>);
+    } else if (i === 11) {
+      content.push(<button key={i} onClick={() => handleChange(undefined)}>Clear</button>)
+    } else {
+      content.push(<button key={i} onClick={() => handleChange(i)}>{i}</button>);
+    }
+  }
+
+  return (
+    <>
+      <div className="numbers">
+        {content}
+      </div>
+    </>
+  )
+}
+
 function App() {
+  const [total, setTotal] = useState(0)
+  const [firstNumber, setFirstNumber] = useState('')
+  const [secondNumber, setSecondNumber] = useState('')
+  const [operator, setOperator] = useState('+')
+
+  const calculate =  () => {
+    const num1 = parseInt(firstNumber)
+    const num2 = parseInt(secondNumber)
+
+    if (operator === '+') setTotal(num1 + num2)
+    else if (operator === '-') setTotal(num1 - num2)
+    else if (operator === '*') setTotal(num1 * num2)
+    else setTotal(num1 / num2)
+  }
+
+  const handleNumberChange = (num, state) => {
+    if (num === undefined) {
+      state('')
+    } else {
+      state((prev) => prev === "0" || prev === "" ? num.toString() : prev + num.toString())
+    }
+  }
+
+  const handleOperator = (operator) => {
+    setOperator(operator)
+  }
 
   return (
     <div className="calculator">
+      {/* First number */}
       <div className="panel">
-        <p>0</p>
+        <p>{firstNumber === '' ? '0' : firstNumber}</p>
+        <RenderNumbers handleChange={(num) => handleNumberChange(num, setFirstNumber)} />
+      </div>
+
+      {/* Choose operator */}
+      <div className="panel">
+        <p>{operator}</p>
         <div className="numbers">
-          <button>1</button>
-          <button>2</button>
-          <button>3</button>
-          <button>4</button>
-          <button>5</button>
-          <button>6</button>
-          <button>7</button>
-          <button>8</button>
-          <button>9</button>
-          <button>0</button>
-          <button>Clear</button>
+          <button onClick={() => handleOperator('+')}>+</button>
+          <button onClick={() => handleOperator('-')}>-</button>
+          <button onClick={() => handleOperator('*')}>*</button>
+          <button onClick={() => handleOperator('/')}>÷</button>
         </div>
       </div>
 
+      {/* Second number */}
       <div className="panel">
-        <p>+</p>
-        <div className="numbers">
-          <button>+</button>
-          <button>-</button>
-          <button>*</button>
-          <button>÷</button>
-        </div>
+        <p>{secondNumber === '' ? '0' : secondNumber}</p>
+        <RenderNumbers handleChange={(num) => handleNumberChange(num, setSecondNumber)} />
       </div>
 
-      <div className="panel">
-        <p>0</p>
-        <div className="numbers">
-          <button>1</button>
-          <button>2</button>
-          <button>3</button>
-          <button>4</button>
-          <button>5</button>
-          <button>6</button>
-          <button>7</button>
-          <button>8</button>
-          <button>9</button>
-          <button>0</button>
-          <button>Clear</button>
-        </div>
-      </div>
+      {/* Calculate */}
       <div className="panel answer">
-        <p>0</p>
+        <p>{total}</p>
         <div>
-          <button>=</button>
+          <button onClick={() => calculate()}>=</button>
         </div>
       </div>
     </div>
